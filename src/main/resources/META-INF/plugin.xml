@@ -8,7 +8,7 @@
 
     <extensions defaultExtensionNs="com.intellij">
 
-        <toolWindow id="JSON Browser" icon="AllIcons.General.Modified" anchor="right"
+        <toolWindow id="JSON Browser" icon="MyIcons.Logo" anchor="right"
                     factoryClass="com.gg.plugins.json.view.ResultPanelFactory"/>
 
         <projectService serviceImplementation="com.gg.plugins.json.service.Notifier"/>
