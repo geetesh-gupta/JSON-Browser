@@ -31,13 +31,9 @@ import com.intellij.openapi.project.DumbAwareAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.LoadingDecorator;
 import com.intellij.openapi.ui.Splitter;
-import com.intellij.openapi.ui.popup.JBPopup;
-import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.util.Disposer;
-import com.intellij.openapi.wm.impl.StripeButton;
 import com.intellij.ui.PopupHandler;
-import com.intellij.ui.awt.RelativePoint;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NotNull;
@@ -68,11 +64,16 @@ public class JsonPanel extends JPanel implements Disposable {
 
 	private JPanel toolBar;
 
-	private JBPopup popup;
-
 	private JPanel errorPanel;
 
 	private JPanel paginationPanel;
+
+	private JLabel title;
+
+	public JsonPanel(Project project, JsonElement jsonElement, String titleText) {
+		this(project, jsonElement);
+		this.title.setText(titleText);
+	}
 
 	public JsonPanel(Project project, JsonElement jsonElement) {
 		this.project = project;
@@ -86,7 +87,7 @@ public class JsonPanel extends JPanel implements Disposable {
 		LoadingDecorator loadingDecorator = new LoadingDecorator(resultPanel, this, 0);
 		splitter.setOrientation(true);
 		splitter.setProportion(0.2f);
-		splitter.setSecondComponent(loadingDecorator.getComponent());
+		splitter.setFirstComponent(loadingDecorator.getComponent());
 
 		setLayout(new BorderLayout());
 		add(rootPanel);
@@ -117,11 +118,10 @@ public class JsonPanel extends JPanel implements Disposable {
 		toolBar.removeAll();
 		toolBar.setLayout(new BorderLayout());
 
-		JComponent actionToolBarComponent = createResultActionsComponent();
-		toolBar.add(actionToolBarComponent, BorderLayout.CENTER);
+		JComponent actionToolBarComponent = createActions();
+		toolBar.add(actionToolBarComponent, BorderLayout.EAST);
 
-		JComponent viewToolbarComponent = createSelectViewActionsComponent();
-		toolBar.add(viewToolbarComponent, BorderLayout.EAST);
+		toolBar.add(title, BorderLayout.CENTER);
 		toolBar.validate();
 	}
 
@@ -152,29 +152,24 @@ public class JsonPanel extends JPanel implements Disposable {
 	}
 
 	@NotNull
-	private JComponent createResultActionsComponent() {
+	private JComponent createActions() {
 		DefaultActionGroup actionResultGroup = new DefaultActionGroup("JsonResultGroup", true);
 		if (resultPanel.getCurrentViewMode() == JsonResultPanel.ViewMode.INPUT) {
 			actionResultGroup.add(new FormatJsonAction(resultPanel));
 		}
 
-		actionResultGroup.add(new CopyAllAction(resultPanel));
-
 		if (resultPanel.getCurrentViewMode() == JsonResultPanel.ViewMode.TREE) {
 			addBasicTreeActions(actionResultGroup);
 		}
-
+		actionResultGroup.addSeparator();
+		actionResultGroup.add(new CopyAllAction(resultPanel));
+		actionResultGroup.addSeparator();
+		actionResultGroup.add(new ViewAsInputAction(this));
+		actionResultGroup.add(new ViewAsTreeAction(this));
+		actionResultGroup.add(new ViewAsTableAction(this));
+		actionResultGroup.addSeparator();
+		actionResultGroup.add(new CloseJsonPanelAction(this));
 		return createToolbarComponent(actionResultGroup, "JsonResultGroupActions");
-	}
-
-	@NotNull
-	private JComponent createSelectViewActionsComponent() {
-		DefaultActionGroup viewSelectGroup = new DefaultActionGroup("JsonViewSelectGroup", false);
-		viewSelectGroup.add(new ViewAsInputAction(this));
-		viewSelectGroup.add(new ViewAsTreeAction(this));
-		viewSelectGroup.add(new ViewAsTableAction(this));
-
-		return createToolbarComponent(viewSelectGroup, "JsonViewSelectGroupActions");
 	}
 
 	@NotNull
@@ -234,10 +229,18 @@ public class JsonPanel extends JPanel implements Disposable {
 		return viewToolbarComponent;
 	}
 
+	public boolean isCloseActionActive() {
+		return this.getParent() != null && this.getParent() instanceof Splitter;
+	}
+
+	public void close() {
+		Disposer.dispose((Disposable) ((Splitter) this.getParent()).getSecondComponent());
+		((Splitter) this.getParent()).setSecondComponent(null);
+	}
+
 	@Override
 	public void dispose() {
 		resultPanel.dispose();
-		popup.dispose();
 	}
 
 	public void setViewMode(JsonResultPanel.ViewMode viewMode) {
@@ -281,31 +284,8 @@ public class JsonPanel extends JPanel implements Disposable {
 								Objects.requireNonNull(resultPanel.resultTableView.getSelectedObject())
 								       .get(selectedColumnName);
 						if (childJsonElement.isJsonArray() || childJsonElement.isJsonObject()) {
-							popup = JBPopupFactory.getInstance()
-							                      .createComponentPopupBuilder(new JsonPanel(project, childJsonElement),
-									                      resultPanel)
-							                      .setCancelKeyEnabled(true)
-							                      .setShowBorder(false)
-							                      .setCancelOnOtherWindowOpen(false)
-							                      .setCancelOnWindowDeactivation(false)
-							                      .setCancelOnClickOutside(false)
-							                      .setCancelOnMouseOutCallback(c -> {
-								                      if (c.getClickCount() == 1) {
-									                      if (c.getComponent() instanceof StripeButton) {
-										                      return true;
-									                      }
-									                      for (int i = 0; i < toolBar.getComponentCount(); i++) {
-										                      if (c.getComponent().equals(toolBar.getComponent(i)))
-											                      return true;
-									                      }
-								                      }
-								                      return false;
-
-							                      })
-							                      .createPopup();
-							popup.setSize(new Dimension(rootPanel.getWidth(),
-									resultPanel.getHeight() + paginationPanel.getHeight()));
-							popup.show(new RelativePoint(resultPanel, new Point(0, toolBar.getY())));
+							JsonPanel subbPanel = new JsonPanel(project, childJsonElement, selectedColumnName);
+							splitter.setSecondComponent(subbPanel);
 						}
 					}
 				}
