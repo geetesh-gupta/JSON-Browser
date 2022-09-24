@@ -1,1 +1,1 @@
-rootProject.name = "json-viewer"
+rootProject.name = "JSON Browser"

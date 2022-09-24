@@ -1,18 +1,20 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
-    <id>com.github.geeteshgupta.jsonviewer</id>
-    <name>json-viewer</name>
+    <id>com.gg.plugins.json</id>
+    <name>JSON Browser</name>
     <vendor>geetesh-gupta</vendor>
 
     <depends>com.intellij.modules.platform</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <applicationService serviceImplementation="com.github.geeteshgupta.jsonviewer.services.MyApplicationService"/>
-        <projectService serviceImplementation="com.github.geeteshgupta.jsonviewer.services.MyProjectService"/>
+
+        <toolWindow id="JSON Browser" icon="AllIcons.General.Modified" anchor="right"
+                    factoryClass="com.gg.plugins.json.view.ResultPanelFactory"/>
+
+        <projectService serviceImplementation="com.gg.plugins.json.service.Notifier"/>
+
     </extensions>
 
     <applicationListeners>
-        <listener class="com.github.geeteshgupta.jsonviewer.listeners.MyProjectManagerListener"
-                  topic="com.intellij.openapi.project.ProjectManagerListener"/>
     </applicationListeners>
 </idea-plugin>

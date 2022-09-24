@@ -1,6 +1,6 @@
 <!-- Keep a Changelog guide -> https://keepachangelog.com -->
 
-# json-viewer Changelog
+# JSON Browser Changelog
 
 ## [Unreleased]
 ### Added
