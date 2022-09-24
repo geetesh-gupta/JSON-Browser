@@ -35,6 +35,7 @@ import com.intellij.openapi.ui.popup.JBPopup;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.util.Disposer;
+import com.intellij.openapi.wm.impl.StripeButton;
 import com.intellij.ui.PopupHandler;
 import com.intellij.ui.awt.RelativePoint;
 import com.intellij.ui.components.JBLabel;
@@ -236,6 +237,7 @@ public class JsonPanel extends JPanel implements Disposable {
 	@Override
 	public void dispose() {
 		resultPanel.dispose();
+		popup.dispose();
 	}
 
 	public void setViewMode(JsonResultPanel.ViewMode viewMode) {
@@ -274,8 +276,7 @@ public class JsonPanel extends JPanel implements Disposable {
 								       .get(selectedColumnName);
 						if (childJsonElement.isJsonArray() || childJsonElement.isJsonObject()) {
 							popup = JBPopupFactory.getInstance()
-							                      .createComponentPopupBuilder(new JsonPanel(project,
-											                      childJsonElement),
+							                      .createComponentPopupBuilder(new JsonPanel(project, childJsonElement),
 									                      resultPanel)
 							                      .setCancelKeyEnabled(true)
 							                      .setShowBorder(false)
@@ -284,6 +285,9 @@ public class JsonPanel extends JPanel implements Disposable {
 							                      .setCancelOnClickOutside(false)
 							                      .setCancelOnMouseOutCallback(c -> {
 								                      if (c.getClickCount() == 1) {
+									                      if (c.getComponent() instanceof StripeButton) {
+										                      return true;
+									                      }
 									                      for (int i = 0; i < toolBar.getComponentCount(); i++) {
 										                      if (c.getComponent().equals(toolBar.getComponent(i)))
 											                      return true;
