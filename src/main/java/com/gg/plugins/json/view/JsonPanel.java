@@ -59,7 +59,7 @@ public class JsonPanel extends JPanel implements Disposable {
 
 	private final Pagination pagination;
 
-	private final JsonElement jsonElement;
+	private JsonElement jsonElement;
 
 	private JPanel rootPanel;
 
@@ -90,7 +90,7 @@ public class JsonPanel extends JPanel implements Disposable {
 		setLayout(new BorderLayout());
 		add(rootPanel);
 
-		initToolBar();
+		updateToolBar();
 		initPaginationPanel();
 
 		pagination.addSetPageListener(this::updateJsonElementPagination);
@@ -111,7 +111,9 @@ public class JsonPanel extends JPanel implements Disposable {
 		return new JsonResultPanel(project, this.jsonElement);
 	}
 
-	private void initToolBar() {
+	private void updateToolBar() {
+		toolBar.invalidate();
+		toolBar.removeAll();
 		toolBar.setLayout(new BorderLayout());
 
 		JComponent actionToolBarComponent = createResultActionsComponent();
@@ -119,6 +121,7 @@ public class JsonPanel extends JPanel implements Disposable {
 
 		JComponent viewToolbarComponent = createSelectViewActionsComponent();
 		toolBar.add(viewToolbarComponent, BorderLayout.EAST);
+		toolBar.validate();
 	}
 
 	private void initPaginationPanel() {
@@ -150,53 +153,37 @@ public class JsonPanel extends JPanel implements Disposable {
 	@NotNull
 	private JComponent createResultActionsComponent() {
 		DefaultActionGroup actionResultGroup = new DefaultActionGroup("JsonResultGroup", true);
+		if (resultPanel.getCurrentViewMode() == JsonResultPanel.ViewMode.INPUT) {
+			actionResultGroup.add(new FormatJsonAction(resultPanel));
+		}
+
 		actionResultGroup.add(new CopyAllAction(resultPanel));
 
-		addBasicTreeActions(actionResultGroup);
-		//TODO Duplicate
-		ActionToolbar actionToolBar =
-				ActionManager.getInstance().createActionToolbar("JsonResultGroupActions", actionResultGroup, true);
-		actionToolBar.setTargetComponent(actionToolBar.getComponent());
-		actionToolBar.setLayoutPolicy(ActionToolbar.AUTO_LAYOUT_POLICY);
-		JComponent actionToolBarComponent = actionToolBar.getComponent();
-		actionToolBarComponent.setBorder(null);
-		actionToolBarComponent.setOpaque(false);
-		return actionToolBarComponent;
+		if (resultPanel.getCurrentViewMode() == JsonResultPanel.ViewMode.TREE) {
+			addBasicTreeActions(actionResultGroup);
+		}
+
+		return createToolbarComponent(actionResultGroup, "JsonResultGroupActions");
 	}
 
 	@NotNull
 	private JComponent createSelectViewActionsComponent() {
 		DefaultActionGroup viewSelectGroup = new DefaultActionGroup("JsonViewSelectGroup", false);
+		viewSelectGroup.add(new ViewAsInputAction(this));
 		viewSelectGroup.add(new ViewAsTreeAction(this));
 		viewSelectGroup.add(new ViewAsTableAction(this));
 
-		//TODO Duplicate
-		ActionToolbar viewToolbar =
-				ActionManager.getInstance().createActionToolbar("MongoViewSelectedActions", viewSelectGroup, true);
-		viewToolbar.setTargetComponent(viewToolbar.getComponent());
-		viewToolbar.setLayoutPolicy(ActionToolbar.AUTO_LAYOUT_POLICY);
-		JComponent viewToolbarComponent = viewToolbar.getComponent();
-		viewToolbarComponent.setBorder(null);
-		viewToolbarComponent.setOpaque(false);
-		return viewToolbarComponent;
+		return createToolbarComponent(viewSelectGroup, "JsonViewSelectGroupActions");
 	}
 
 	@NotNull
 	private JComponent createPaginationActionsComponent() {
-		DefaultActionGroup actionResultGroup = new DefaultActionGroup("MongoPaginationGroup", false);
+		DefaultActionGroup actionResultGroup = new DefaultActionGroup("PaginationGroup", false);
 		actionResultGroup.add(new ChangeResultsPerPageActionComponent(() -> new PaginationPopupComponent(pagination).initUi()));
 		actionResultGroup.add(new PaginationAction.Previous(pagination));
 		actionResultGroup.add(new PaginationAction.Next(pagination));
 
-		ActionToolbar actionToolBar =
-				ActionManager.getInstance().createActionToolbar("MongoPaginationGroupActions", actionResultGroup,
-						true);
-		actionToolBar.setTargetComponent(actionToolBar.getComponent());
-		actionToolBar.setLayoutPolicy(ActionToolbar.AUTO_LAYOUT_POLICY);
-		JComponent actionToolBarComponent = actionToolBar.getComponent();
-		actionToolBarComponent.setBorder(null);
-		actionToolBarComponent.setOpaque(false);
-		return actionToolBarComponent;
+		return createToolbarComponent(actionResultGroup, "PaginationGroupActions");
 	}
 
 	private void addBasicTreeActions(DefaultActionGroup actionResultGroup) {
@@ -236,17 +223,34 @@ public class JsonPanel extends JPanel implements Disposable {
 		actionResultGroup.add(collapseAllAction);
 	}
 
+	private JComponent createToolbarComponent(DefaultActionGroup actionGroup, String name) {
+		ActionToolbar viewToolbar = ActionManager.getInstance().createActionToolbar(name, actionGroup, true);
+		viewToolbar.setTargetComponent(viewToolbar.getComponent());
+		viewToolbar.setLayoutPolicy(ActionToolbar.AUTO_LAYOUT_POLICY);
+		JComponent viewToolbarComponent = viewToolbar.getComponent();
+		viewToolbarComponent.setBorder(null);
+		viewToolbarComponent.setOpaque(false);
+		return viewToolbarComponent;
+	}
+
 	@Override
 	public void dispose() {
 		resultPanel.dispose();
 	}
 
 	public void setViewMode(JsonResultPanel.ViewMode viewMode) {
+		JsonResultPanel.ViewMode prevViewMode = resultPanel.getCurrentViewMode();
 		if (resultPanel.getCurrentViewMode().equals(viewMode)) {
 			return;
 		}
 		this.resultPanel.setCurrentViewMode(viewMode);
 		UIUtil.invokeLaterIfNeeded(() -> {
+			if (prevViewMode == JsonResultPanel.ViewMode.INPUT) {
+				this.jsonElement = resultPanel.getEditorValue();
+			}
+
+			updateToolBar();
+
 			resultPanel.updateResultView(jsonElement, pagination);
 			rowCountLabel.setText(String.format("%s documents",
 					jsonElement.isJsonArray() ? jsonElement.getAsJsonArray().size() : 1));
@@ -255,48 +259,55 @@ public class JsonPanel extends JPanel implements Disposable {
 	}
 
 	private void initActions(JsonResultPanel jsonResultPanel) {
-		jsonResultPanel.resultTableView.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent mouseEvent) {
-				if (mouseEvent.getClickCount() == 2) {
-					int selectedColumnNum = resultPanel.resultTableView.getSelectedColumn();
-					String selectedColumnName = resultPanel.resultTableView.getColumnModel()
-					                                                       .getColumn(selectedColumnNum)
-					                                                       .getHeaderValue()
-					                                                       .toString();
-					JsonElement childJsonElement =
-							Objects.requireNonNull(resultPanel.resultTableView.getSelectedObject())
-							       .get(selectedColumnName);
-					if (childJsonElement.isJsonArray() || childJsonElement.isJsonObject()) {
-						popup = JBPopupFactory.getInstance()
-						                      .createComponentPopupBuilder(new JsonPanel(project, childJsonElement),
-								                      resultPanel)
-						                      .setCancelKeyEnabled(true)
-						                      .setShowBorder(false)
-						                      .setCancelOnOtherWindowOpen(false)
-						                      .setCancelOnWindowDeactivation(false)
-						                      .setCancelOnClickOutside(false)
-						                      .setCancelOnMouseOutCallback(c -> {
-							                      if (c.getClickCount() == 1) {
-								                      return c.getComponent().equals(toolBar.getComponent(0));
-							                      }
-							                      return false;
-						                      })
-						                      .createPopup();
-						popup.setSize(new Dimension(rootPanel.getWidth(),
-								resultPanel.getHeight() + paginationPanel.getHeight()));
-						popup.show(new RelativePoint(resultPanel, new Point(0, toolBar.getY())));
+		if (jsonResultPanel.resultTableView != null) {
+			jsonResultPanel.resultTableView.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseClicked(MouseEvent mouseEvent) {
+					if (mouseEvent.getClickCount() == 2) {
+						int selectedColumnNum = resultPanel.resultTableView.getSelectedColumn();
+						String selectedColumnName = resultPanel.resultTableView.getColumnModel()
+						                                                       .getColumn(selectedColumnNum)
+						                                                       .getHeaderValue()
+						                                                       .toString();
+						JsonElement childJsonElement =
+								Objects.requireNonNull(resultPanel.resultTableView.getSelectedObject())
+								       .get(selectedColumnName);
+						if (childJsonElement.isJsonArray() || childJsonElement.isJsonObject()) {
+							popup = JBPopupFactory.getInstance()
+							                      .createComponentPopupBuilder(new JsonPanel(project,
+											                      childJsonElement),
+									                      resultPanel)
+							                      .setCancelKeyEnabled(true)
+							                      .setShowBorder(false)
+							                      .setCancelOnOtherWindowOpen(false)
+							                      .setCancelOnWindowDeactivation(false)
+							                      .setCancelOnClickOutside(false)
+							                      .setCancelOnMouseOutCallback(c -> {
+								                      if (c.getClickCount() == 1) {
+									                      for (int i = 0; i < toolBar.getComponentCount(); i++) {
+										                      if (c.getComponent().equals(toolBar.getComponent(i)))
+											                      return true;
+									                      }
+								                      }
+								                      return false;
+
+							                      })
+							                      .createPopup();
+							popup.setSize(new Dimension(rootPanel.getWidth(),
+									resultPanel.getHeight() + paginationPanel.getHeight()));
+							popup.show(new RelativePoint(resultPanel, new Point(0, toolBar.getY())));
+						}
 					}
 				}
+			});
+
+			DefaultActionGroup actionPopupGroup = new DefaultActionGroup("JsonPanelPopupGroup", true);
+			if (ApplicationManager.getApplication() != null) {
+				actionPopupGroup.add(new CopyNodeAction(resultPanel));
 			}
-		});
 
-		DefaultActionGroup actionPopupGroup = new DefaultActionGroup("JsonPanelPopupGroup", true);
-		if (ApplicationManager.getApplication() != null) {
-			actionPopupGroup.add(new CopyNodeAction(resultPanel));
+			PopupHandler.installPopupMenu(jsonResultPanel.resultTreeTableView, actionPopupGroup, "POPUP");
 		}
-
-		PopupHandler.installPopupMenu(jsonResultPanel.resultTreeTableView, actionPopupGroup, "POPUP");
 	}
 
 	public JComponent getContent() {
