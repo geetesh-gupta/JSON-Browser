@@ -42,7 +42,7 @@ public class CopyNodeAction extends AnAction implements DumbAware {
 
 	@Override
 	public void update(AnActionEvent e) {
-		e.getPresentation().setVisible(jsonResultPanel.getSelectedNode() != null);
+		e.getPresentation().setVisible(jsonResultPanel.isSelectionValid());
 	}
 
 	@Override

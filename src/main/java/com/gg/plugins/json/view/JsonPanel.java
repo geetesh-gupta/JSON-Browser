@@ -261,6 +261,12 @@ public class JsonPanel extends JPanel implements Disposable {
 	}
 
 	private void initActions(JsonResultPanel jsonResultPanel) {
+
+		DefaultActionGroup actionPopupGroup = new DefaultActionGroup("JsonPanelPopupGroup", true);
+		if (ApplicationManager.getApplication() != null) {
+			actionPopupGroup.add(new CopyNodeAction(resultPanel));
+		}
+
 		if (jsonResultPanel.resultTableView != null) {
 			jsonResultPanel.resultTableView.addMouseListener(new MouseAdapter() {
 				@Override
@@ -305,13 +311,11 @@ public class JsonPanel extends JPanel implements Disposable {
 				}
 			});
 
-			DefaultActionGroup actionPopupGroup = new DefaultActionGroup("JsonPanelPopupGroup", true);
-			if (ApplicationManager.getApplication() != null) {
-				actionPopupGroup.add(new CopyNodeAction(resultPanel));
-			}
-
-			PopupHandler.installPopupMenu(jsonResultPanel.resultTreeTableView, actionPopupGroup, "POPUP");
+			PopupHandler.installPopupMenu(jsonResultPanel.resultTableView, actionPopupGroup, "POPUP");
 		}
+
+		if (jsonResultPanel.resultTreeTableView != null)
+			PopupHandler.installPopupMenu(jsonResultPanel.resultTreeTableView, actionPopupGroup, "POPUP");
 	}
 
 	public JComponent getContent() {

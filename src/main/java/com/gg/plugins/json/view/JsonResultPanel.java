@@ -45,10 +45,13 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.awt.*;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class JsonResultPanel extends JPanel implements Disposable {
+
+	private static final String TO_STRING_TEMPLATE = "\"%s\" : %s";
 
 	private final Project project;
 
@@ -256,7 +259,16 @@ public class JsonResultPanel extends JPanel implements Disposable {
 			return getEditorValue().toString();
 		}
 		JsonTreeNode rootNode = (JsonTreeNode) resultTreeTableView.getTree().getModel().getRoot();
-		return stringifyResult(rootNode);
+		if (rootNode.getChildCount() == 0)
+			return "";
+		if (((JsonTreeNode) rootNode.getChildAt(0)).getDescriptor() instanceof KeyValueDescriptor)
+			return IntStream.range(0, rootNode.getChildCount()).mapToObj(i -> {
+				NodeDescriptor childNode = getDescriptor(i, rootNode);
+				return String.format(TO_STRING_TEMPLATE, childNode.getKey(), childNode);
+			}).collect(Collectors.joining(",", "{", "}"));
+		return IntStream.range(0, rootNode.getChildCount())
+		                .mapToObj(i -> rootNode.getChildAt(i).toString())
+		                .collect(Collectors.joining(",", "[", "]"));
 	}
 
 	ViewMode getCurrentViewMode() {
@@ -272,27 +284,37 @@ public class JsonResultPanel extends JPanel implements Disposable {
 		return JsonParser.parseString(document.getText());
 	}
 
-	private String stringifyResult(DefaultMutableTreeNode selectedResultNode) {
-		return IntStream.range(0, selectedResultNode.getChildCount())
-		                .mapToObj(i -> getDescriptor(i, selectedResultNode).toString())
-		                .collect(Collectors.joining(",", "[", "]"));
-	}
-
 	private static NodeDescriptor getDescriptor(int i, DefaultMutableTreeNode parentNode) {
 		DefaultMutableTreeNode childNode = (DefaultMutableTreeNode) parentNode.getChildAt(i);
 		return (NodeDescriptor) childNode.getUserObject();
 	}
 
 	public String getSelectedNodeStringifiedValue() {
-		JsonTreeNode lastSelectedResultNode = getSelectedNode();
-		if (lastSelectedResultNode == null) {
+		if (!isSelectionValid())
 			return null;
-		}
-		return stringifyResult(lastSelectedResultNode);
+
+		String result = "";
+		if (getCurrentViewMode() == ViewMode.TREE)
+			result = resultTreeTableView.getTree().getLastSelectedPathComponent().toString();
+		else if (getCurrentViewMode() == ViewMode.TABLE)
+			result = getSelectedCell().toString();
+
+		return result.replaceAll("^\"|\"$", "");
 	}
 
-	public JsonTreeNode getSelectedNode() {
-		return (JsonTreeNode) resultTreeTableView.getTree().getLastSelectedPathComponent();
+	public boolean isSelectionValid() {
+		if (getCurrentViewMode() == ViewMode.TREE)
+			return resultTreeTableView.getTree().getLastSelectedPathComponent() != null;
+		return getSelectedCell() != null;
+	}
+
+	public JsonElement getSelectedCell() {
+		if (resultTableView.getSelectedColumn() == -1)
+			return resultTableView.getSelectedObject();
+		int selectedColumnNum = resultTableView.getSelectedColumn();
+		String selectedColumnName =
+				resultTableView.getColumnModel().getColumn(selectedColumnNum).getHeaderValue().toString();
+		return Objects.requireNonNull(resultTableView.getSelectedObject()).get(selectedColumnName);
 	}
 
 	@Override
