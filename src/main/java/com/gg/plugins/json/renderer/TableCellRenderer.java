@@ -21,7 +21,7 @@ import com.gg.plugins.json.style.StyleAttributesProvider;
 import com.intellij.ui.ColoredTableCellRenderer;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.*;
+import javax.swing.JTable;
 
 public class TableCellRenderer extends ColoredTableCellRenderer {
 

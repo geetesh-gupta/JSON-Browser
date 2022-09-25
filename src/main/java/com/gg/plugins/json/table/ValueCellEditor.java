@@ -20,8 +20,10 @@ package com.gg.plugins.json.table;
 import com.gg.plugins.json.model.JsonTreeNode;
 import com.intellij.ui.treeStructure.treetable.TreeTable;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JTextField;
+import javax.swing.JTable;
+import javax.swing.DefaultCellEditor;
+import java.awt.Component;
 
 public class ValueCellEditor extends DefaultCellEditor {
 

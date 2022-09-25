@@ -20,7 +20,7 @@ import com.gg.plugins.json.model.NodeDescriptor;
 import com.gg.plugins.json.utils.DateUtils;
 import org.jdesktop.swingx.table.DatePickerCellEditor;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
 import java.awt.event.ActionListener;
 import java.util.Date;
 import java.util.Locale;

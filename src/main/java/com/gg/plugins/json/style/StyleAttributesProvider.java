@@ -21,7 +21,7 @@ import com.intellij.ui.Gray;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.SimpleTextAttributes;
 
-import java.awt.*;
+import java.awt.Color;
 
 public class StyleAttributesProvider {
 

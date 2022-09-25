@@ -22,7 +22,7 @@ import com.gg.plugins.json.model.NodeDescriptor;
 import com.intellij.ui.ColoredTreeCellRenderer;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.*;
+import javax.swing.JTree;
 
 public class KeyCellRenderer extends ColoredTreeCellRenderer {
 

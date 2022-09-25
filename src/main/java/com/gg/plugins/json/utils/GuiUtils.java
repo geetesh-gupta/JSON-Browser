@@ -26,8 +26,14 @@ import com.intellij.openapi.util.IconLoader;
 import com.intellij.ui.awt.RelativePoint;
 import com.intellij.util.ui.UIUtil;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JPanel;
+import javax.swing.Icon;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.UIManager;
+import java.awt.Point;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 
 public class GuiUtils {
 

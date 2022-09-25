@@ -24,7 +24,7 @@ import com.intellij.ui.treeStructure.treetable.TreeTable;
 import com.intellij.ui.treeStructure.treetable.TreeTableTree;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.*;
+import javax.swing.JTable;
 import javax.swing.tree.TreePath;
 
 public class ValueCellRenderer extends ColoredTableCellRenderer {
