@@ -5,25 +5,37 @@
 [![Downloads](https://img.shields.io/jetbrains/plugin/d/20013-json-browser.svg)](https://plugins.jetbrains.com/plugin/20013-json-browser)
 
 <!-- Plugin description -->
-This JSON Browser plugin allows you to view JSON objects in different formats including `JSON`, `Tree` and `Table`
-format. Also supports formatting of JSON objects.
+This JSON Browser plugin allows you to work with JSON objects within JetBrains IDEs.
 
-## Compatibility Range
-- 213—222.*
-- Check https://plugins.jetbrains.com/plugin/20013-json-browser/versions for further details
+This plugin was created with a single goal in
+mind: `to offer an all-in-one solution for managing JSON objects within the
+IDE itself.`
+
+All the current and upcoming features are listed here.
 
 ## Features
-- [x] Viw JSON object as `JSON`, `TABLE` or `TREE`
+
+- [x] View JSON object as `JSON`, `TABLE` or `TREE`
 - [x] In Table view, view child JSON objects in child JSON Browser window
 - [x] Add Pagination support
 
-### Upcoming
+## Upcoming
+
 - [ ] Import/Export JSON files
 - [ ] Compare two JSON files
 - [ ] Add custom scripts using JavaScript to process the JSON
 - [ ] Directly view opened JSON files in the JSON Browser window
 
+## Feedback/Suggestion
+Please feel free to provide constructive feedback and feature requests by creating a new issue
+on https://github.com/geetesh-gupta/JSON-Browser/issues.
+
 <!-- Plugin description end -->
+
+## Compatibility Range
+
+- 213—222.*
+- Check https://plugins.jetbrains.com/plugin/20013-json-browser/versions for further details
 
 ## Installation
 
