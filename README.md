@@ -7,6 +7,22 @@
 <!-- Plugin description -->
 This JSON Browser plugin allows you to view JSON objects in different formats including `JSON`, `Tree` and `Table`
 format. Also supports formatting of JSON objects.
+
+## Compatibility Range
+- 213—222.*
+- Check https://plugins.jetbrains.com/plugin/20013-json-browser/versions for further details
+
+## Features
+- [x] Viw JSON object as `JSON`, `TABLE` or `TREE`
+- [x] In Table view, view child JSON objects in child JSON Browser window
+- [x] Add Pagination support
+
+### Upcoming
+- [ ] Import/Export JSON files
+- [ ] Compare two JSON files
+- [ ] Add custom scripts using JavaScript to process the JSON
+- [ ] Directly view opened JSON files in the JSON Browser window
+
 <!-- Plugin description end -->
 
 ## Installation

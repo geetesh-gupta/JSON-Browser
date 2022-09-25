@@ -18,3 +18,6 @@
 
 ## [0.0.4]
 - Remove 'com.intellij.uiDesigner.core', 'com.intellij.uiDesigner' bundles from the build 
+
+## [0.0.5]
+- Update Description and README
