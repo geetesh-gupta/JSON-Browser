@@ -18,7 +18,7 @@ format. Also supports formatting of JSON objects.
 
 - Manually:
 
-  Download the [latest release](https://github.com/geetesh-gupta/json-viewer/releases/latest) and install it manually
+  Download the [latest version](https://plugins.jetbrains.com/plugin/20013-json-browser) and install it manually
   using
   <kbd>Settings/Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>⚙️</kbd> > <kbd>Install plugin from disk...</kbd>
 
