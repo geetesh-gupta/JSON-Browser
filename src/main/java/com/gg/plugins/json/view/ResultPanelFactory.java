@@ -35,7 +35,8 @@ public class ResultPanelFactory implements ToolWindowFactory {
 				"\"otherPlugins\":[{\"name\":\"MongoDBBrowser\",\"urls\":[{\"github\":\"https://github" +
 				".com/geetesh-gupta/Mongo-DB-Browser\"},{\"jetbrains\":\"https://plugins.jetbrains" +
 				".com/plugin/20002-mongo-db-browser\"}]},{\"name\":\"JSONBrowser\"," +
-				"\"urls\":[{\"github\":\"https://github.com/geetesh-gupta/JSON-Browser\"}]}]}";
+				"\"urls\":[{\"github\":\"https://github.com/geetesh-gupta/JSON-Browser\"}," +
+				"{\"jetbrains\":\"https://plugins.jetbrains.com/plugin/20013-json-browser\"}]}]}";
 
 		JsonPanel myToolWindow = new JsonPanel(project, JsonParser.parseString(jsonStr));
 
