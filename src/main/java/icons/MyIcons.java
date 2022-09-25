@@ -21,5 +21,5 @@ import com.intellij.openapi.util.IconLoader;
 import javax.swing.Icon;
 
 public interface MyIcons {
-	Icon Logo = IconLoader.getIcon("/icons/logo16.svg", MyIcons.class);
+	Icon Logo = IconLoader.getIcon("/icons/icon13.svg", MyIcons.class);
 }
