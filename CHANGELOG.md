@@ -2,9 +2,6 @@
 
 # JSON Browser Changelog
 
-## [Unreleased]
-- Initial scaffold created from [IntelliJ Platform Plugin Template](https://github.com/JetBrains/intellij-platform-plugin-template)
-
 ## [0.0.1]
 - Add JSON Browser with JSON/Tree/Table views
 - Add Copy Action
@@ -18,3 +15,6 @@
 
 ## [0.0.3]
 - Optimize imports and update Icons
+
+## [0.0.4]
+- Remove 'com.intellij.uiDesigner.core', 'com.intellij.uiDesigner' bundles from the build 
