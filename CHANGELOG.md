@@ -3,7 +3,6 @@
 # JSON Browser Changelog
 
 ## [Unreleased]
-### Added
 - Initial scaffold created from [IntelliJ Platform Plugin Template](https://github.com/JetBrains/intellij-platform-plugin-template)
 
 ## [0.0.1]
@@ -13,3 +12,9 @@
 - Add JSON Format Action
 - Add support for viewing cells in Table view as a JSON element in child JSON Browser window
 - Add Pagination support
+
+## [0.0.2]
+- Improve child JSON Browser window support
+
+## [0.0.3]
+- Optimize imports and update Icons
