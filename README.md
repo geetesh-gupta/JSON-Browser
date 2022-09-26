@@ -41,7 +41,7 @@ on https://github.com/geetesh-gupta/JSON-Browser/issues.
 
 - Using IDE built-in plugin system:
 
-  <kbd>Settings/Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>Marketplace</kbd> > <kbd>Search for "json-viewer"</kbd> >
+  <kbd>Settings/Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>Marketplace</kbd> > <kbd>Search for "JSON Browser"</kbd> >
   <kbd>Install Plugin</kbd>
 
 - Manually:
