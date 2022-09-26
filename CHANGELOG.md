@@ -2,6 +2,8 @@
 
 # JSON Browser Changelog
 
+## [Unreleased]
+
 ## [0.0.1]
 - Add JSON Browser with JSON/Tree/Table views
 - Add Copy Action
