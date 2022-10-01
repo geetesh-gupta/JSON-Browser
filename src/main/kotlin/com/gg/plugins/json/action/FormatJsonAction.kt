@@ -24,6 +24,6 @@ import com.intellij.openapi.project.DumbAware
 class FormatJsonAction(private val jsonResultPanel: JsonResultPanel) :
     AnAction("Format JSON", "Format JSON", AllIcons.Actions.Refresh), DumbAware {
     override fun actionPerformed(anActionEvent: AnActionEvent) {
-        jsonResultPanel.updateResultView(jsonResultPanel.editorValue, null)
+        jsonResultPanel.updateResultView(jsonResultPanel.editorValue(), null)
     }
 }

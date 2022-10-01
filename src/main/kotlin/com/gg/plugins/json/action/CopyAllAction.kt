@@ -27,6 +27,6 @@ import java.awt.datatransfer.StringSelection
 class CopyAllAction(private val jsonResultPanel: JsonResultPanel) :
     AnAction("Copy Results", "Copy results to clipboard", AllIcons.Actions.Copy), DumbAware {
     override fun actionPerformed(anActionEvent: AnActionEvent) {
-        CopyPasteManager.getInstance().setContents(StringSelection(jsonResultPanel.stringifiedResult))
+        CopyPasteManager.getInstance().setContents(StringSelection(jsonResultPanel.stringifiedResult()))
     }
 }

@@ -21,20 +21,21 @@ import com.gg.plugins.json.renderer.KeyCellRenderer
 import com.gg.plugins.json.renderer.ValueCellRenderer
 import com.gg.plugins.json.table.TreeNodeDatePickerCellEditor
 import com.gg.plugins.json.table.ValueCellEditor
+import com.gg.plugins.json.utils.JsonTreeUtils
 import com.intellij.ui.TreeTableSpeedSearch
 import com.intellij.ui.treeStructure.treetable.ListTreeTableModelOnColumns
 import com.intellij.ui.treeStructure.treetable.TreeTable
 import com.intellij.ui.treeStructure.treetable.TreeTableModel
 import com.intellij.util.ui.ColumnInfo
 import org.apache.commons.lang.StringUtils
-import java.util.*
+import java.util.Date
 import javax.swing.table.TableCellEditor
 import javax.swing.table.TableCellRenderer
 import javax.swing.tree.TreeNode
 import javax.swing.tree.TreePath
 import kotlin.math.max
 
-class JsonTreeTableView(rootNode: TreeNode, private val columns: Array<ColumnInfo<JsonTreeNode, NodeDescriptor>>) :
+class JsonTreeTableView(rootNode: TreeNode, private val columns: Array<ColumnInfo<JsonTreeNode, out Any>>) :
     TreeTable(ListTreeTableModelOnColumns(rootNode, columns)) {
     init {
         val tree = tree
@@ -95,7 +96,7 @@ class JsonTreeTableView(rootNode: TreeNode, private val columns: Array<ColumnInf
         }
     }
 
-    private class WritableColumnInfo : ColumnInfo<JsonTreeNode, NodeDescriptor>("Value") {
+    private class WritableColumnInfo : ColumnInfo<JsonTreeNode, Any>("Value") {
         private val myRenderer: TableCellRenderer = ValueCellRenderer()
         private val defaultEditor: TableCellEditor = ValueCellEditor()
         override fun valueOf(treeNode: JsonTreeNode): NodeDescriptor {
@@ -106,8 +107,8 @@ class JsonTreeTableView(rootNode: TreeNode, private val columns: Array<ColumnInf
             return true
         }
 
-        override fun setValue(treeNode: JsonTreeNode, value: NodeDescriptor) {
-            treeNode.descriptor.value = value
+        override fun setValue(treeNode: JsonTreeNode, value: Any) {
+            JsonTreeUtils.updateNode(treeNode, value)
         }
 
         override fun getRenderer(o: JsonTreeNode): TableCellRenderer {

@@ -54,7 +54,7 @@ open class KeyValueDescriptor private constructor(
 
     companion object {
         @JvmStatic
-        fun createDescriptor(key: String, value: Any?): KeyValueDescriptor { //TODO refactor this
+        fun createDescriptor(key: String, value: Any?): KeyValueDescriptor {
             return when (value) {
                 is Boolean -> {
                     object : KeyValueDescriptor(key, value, StyleAttributesProvider.booleanAttribute) {

@@ -16,10 +16,14 @@
 package com.gg.plugins.json.view
 
 import com.gg.plugins.json.action.*
+import com.gg.plugins.json.model.JsonTreeNode
 import com.gg.plugins.json.model.Pagination
 import com.gg.plugins.json.model.ResultsPerPage
+import com.gg.plugins.json.utils.JsonTreeUtils
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
+import com.google.gson.JsonObject
+import com.google.gson.JsonParser
 import com.intellij.ide.CommonActionsManager
 import com.intellij.ide.TreeExpander
 import com.intellij.openapi.Disposable
@@ -216,9 +220,8 @@ class JsonPanel(private val project: Project, jsonElement: JsonElement) : JPanel
         }
         resultPanel.currentViewMode = viewMode
         UIUtil.invokeLaterIfNeeded {
-            if (prevViewMode == JsonResultPanel.ViewMode.INPUT) {
-                jsonElement = resultPanel.editorValue
-            }
+            jsonElement = JsonParser.parseString(resultPanel.stringifiedResult(prevViewMode))
+
             updateToolBar()
             resultPanel.updateResultView(jsonElement, pagination)
             rowCountLabel.text = String.format(
@@ -235,28 +238,71 @@ class JsonPanel(private val project: Project, jsonElement: JsonElement) : JPanel
             actionPopupGroup.add(CopyNodeAction(resultPanel))
         }
 
-        jsonResultPanel.resultTableView?.let {
-            it.addMouseListener(object : MouseAdapter() {
+        jsonResultPanel.resultTableView?.let { tableView ->
+            tableView.addMouseListener(object : MouseAdapter() {
                 override fun mouseClicked(mouseEvent: MouseEvent) {
                     if (mouseEvent.clickCount == 2) {
-                        val selectedColumnNum = it.selectedColumn
-                        val selectedColumnName = it.columnModel
+                        val selectedColumnNum = tableView.selectedColumn
+                        val selectedColumnName = tableView.columnModel
                             .getColumn(selectedColumnNum)
                             .headerValue
                             .toString()
                         val childJsonElement =
-                            it.selectedObject?.get(selectedColumnName)
+                            tableView.selectedObject?.get(selectedColumnName)
                         if (childJsonElement != null && (childJsonElement.isJsonArray || childJsonElement.isJsonObject)) {
                             val subPanel = JsonPanel(
                                 project, childJsonElement, selectedColumnName
                             )
+                            subPanel.addPropertyChangeListener("ancestor") { event ->
+                                if (event.newValue == null) {
+                                    UIUtil.invokeLaterIfNeeded {
+                                        val parentPanel: JsonResultPanel =
+                                            ((event.oldValue as Splitter).firstComponent.getComponent(0) as JsonResultPanel)
+                                        val subPanelNewVal =
+                                            ((event.oldValue as Splitter).secondComponent as JsonPanel).resultPanel.stringifiedResult()
+                                        when (parentPanel.currentViewMode) {
+                                            JsonResultPanel.ViewMode.INPUT -> {
+                                                val activeJson = (parentPanel.editorValue() as JsonArray)
+                                                val activeObject =
+                                                    activeJson.get(tableView.selectedRow) as JsonObject
+                                                activeObject.add(
+                                                    selectedColumnName,
+                                                    JsonParser.parseString(subPanelNewVal)
+                                                )
+                                                parentPanel.updateResultView(activeJson, pagination)
+                                            }
+
+                                            JsonResultPanel.ViewMode.TREE -> {
+                                                val activeNode =
+                                                    (parentPanel.resultTreeTableView!!.tableModel.root as JsonTreeNode).getChildAt(
+                                                        tableView.selectedRow
+                                                    ) as JsonTreeNode
+                                                val activeObject = activeNode.descriptor.value as JsonObject
+                                                activeObject.add(
+                                                    selectedColumnName,
+                                                    JsonParser.parseString(subPanelNewVal)
+                                                )
+                                                JsonTreeUtils.updateNode(activeNode, activeObject)
+                                            }
+
+                                            JsonResultPanel.ViewMode.TABLE -> {
+                                                val parentPanelTableView = parentPanel.resultTableView
+                                                parentPanelTableView?.selectedObject?.add(
+                                                    selectedColumnName,
+                                                    JsonParser.parseString(subPanelNewVal)
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                             splitter!!.secondComponent = subPanel
                         }
                     }
                 }
             })
 
-            PopupHandler.installPopupMenu(it, actionPopupGroup, ActionPlaces.POPUP)
+            PopupHandler.installPopupMenu(tableView, actionPopupGroup, ActionPlaces.POPUP)
         }
 
         jsonResultPanel.resultTreeTableView?.let {
