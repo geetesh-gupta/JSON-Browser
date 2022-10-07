@@ -18,6 +18,7 @@ All the current and upcoming features are listed here.
 - [x] View JSON object as `JSON`, `TABLE` or `TREE`
 - [x] In Table view, view child JSON objects in child JSON Browser window
 - [x] Add Pagination support
+- [x] Edit support in all the views along with child windows
 
 ## Upcoming
 

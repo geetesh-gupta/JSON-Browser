@@ -34,9 +34,8 @@ object StyleAttributesProvider {
     val indexAttribute = SimpleTextAttributes(SimpleTextAttributes.STYLE_BOLD, JBColor.BLACK)
     val keyValueAttribute = SimpleTextAttributes(SimpleTextAttributes.STYLE_BOLD, KEY_COLOR)
     val numberAttribute = SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, NUMBER_COLOR)
-    val booleanAttribute = numberAttribute
+    val booleanAttribute = SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, NUMBER_COLOR)
     val stringAttribute = SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, LIGNT_GREEN)
     val nullAttribute = SimpleTextAttributes(SimpleTextAttributes.STYLE_ITALIC, LIGHT_GRAY)
     val documentAttribute = SimpleTextAttributes(SimpleTextAttributes.STYLE_BOLD, LIGHT_GRAY)
-    val objectIdAttribute = numberAttribute
 }

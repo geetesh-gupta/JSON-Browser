@@ -29,14 +29,20 @@ class TableCellRenderer : ColoredTableCellRenderer() {
         row: Int,
         column: Int
     ) {
-        if (value == null) {
-            append("null", StyleAttributesProvider.nullAttribute)
-        } else {
-            if (value is Number) {
+        when (value) {
+            null -> {
+                append("null", StyleAttributesProvider.nullAttribute)
+            }
+
+            is Number -> {
                 append(value.toString(), StyleAttributesProvider.numberAttribute)
-            } else if (value is Boolean) {
+            }
+
+            is Boolean -> {
                 append(value.toString(), StyleAttributesProvider.booleanAttribute)
-            } else {
+            }
+
+            else -> {
                 append(value.toString(), StyleAttributesProvider.stringAttribute)
             }
         }

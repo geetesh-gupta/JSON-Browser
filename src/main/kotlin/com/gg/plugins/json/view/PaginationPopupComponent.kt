@@ -176,7 +176,8 @@ internal class PaginationPopupComponent(private val pagination: Pagination) : JP
             ) else String.format("%s docs / page", resultsPerPage.label)
         }
 
-        private fun createFocusedBorder(): Border {
+        @JvmStatic
+        fun createFocusedBorder(): Border {
             return BorderFactory.createCompoundBorder(
                 RoundedLineBorder(
                     UIUtil.getHeaderActiveColor(), 10,
@@ -186,7 +187,8 @@ internal class PaginationPopupComponent(private val pagination: Pagination) : JP
             )
         }
 
-        private fun createUnfocusedBorder(): Border {
+        @JvmStatic
+        fun createUnfocusedBorder(): Border {
             return BorderFactory.createCompoundBorder(
                 BorderFactory.createEmptyBorder(
                     BORDER_SIZE,

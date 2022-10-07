@@ -51,7 +51,7 @@ import kotlin.math.min
 class JsonPanel(private val project: Project, jsonElement: JsonElement) : JPanel(), Disposable {
     private val rowCountLabel = JBLabel()
     private val pageNumberLabel = JBLabel()
-    private val resultPanel: JsonResultPanel
+    val resultPanel: JsonResultPanel
     private val pagination: Pagination = Pagination()
     private var jsonElement: JsonElement
     private var rootPanel: JPanel? = null
@@ -286,8 +286,7 @@ class JsonPanel(private val project: Project, jsonElement: JsonElement) : JPanel
                                             }
 
                                             JsonResultPanel.ViewMode.TABLE -> {
-                                                val parentPanelTableView = parentPanel.resultTableView
-                                                parentPanelTableView?.selectedObject?.add(
+                                                parentPanel.resultTableView?.selectedObject?.add(
                                                     selectedColumnName,
                                                     JsonParser.parseString(subPanelNewVal)
                                                 )

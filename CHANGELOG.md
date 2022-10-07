@@ -26,3 +26,9 @@
 
 ## [0.0.6]
 - Update Description and README
+
+## [0.1.0]
+- Add `Edit` support in all the views
+- Add `Edit` support in child panel
+  - For now, child panel edits are saved only when child panel is closed  
+  - Also, child panel edits take precedence over parent panel edits for the same key
