@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package icons
+package com.gg.plugins.json
 
 import com.intellij.openapi.util.IconLoader
 
-interface MyIcons {
-    companion object {
-        val Logo = IconLoader.getIcon("/icons/icon13.svg", MyIcons::class.java)
-    }
+object MyIcons {
+    @JvmField
+    val Logo = IconLoader.getIcon("/icons/icon13.svg", javaClass)
 }
