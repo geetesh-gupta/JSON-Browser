@@ -15,11 +15,16 @@
  */
 package com.gg.plugins.json.view
 
+import com.intellij.ui.TableSpeedSearch
 import com.intellij.ui.table.TableView
 import com.intellij.util.ui.ListTableModel
 
 class JsonTableView<Item>(tableModel: ListTableModel<Item>) :
-    TableView<Item>(tableModel)
+    TableView<Item>(tableModel) {
+    init {
+        TableSpeedSearch(this)
+    }
+}
 
 
 

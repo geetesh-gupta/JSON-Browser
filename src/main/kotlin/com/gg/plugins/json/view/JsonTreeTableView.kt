@@ -49,7 +49,7 @@ class JsonTreeTableView(rootNode: TreeNode, private val columns: Array<ColumnInf
         TreeTableSpeedSearch(this) { path: TreePath ->
             val node = path.lastPathComponent as JsonTreeNode
             val descriptor = node.descriptor
-            descriptor.key
+            descriptor.value.toString()
         }
     }
 

@@ -32,3 +32,7 @@
 - Add `Edit` support in child panel
   - For now, child panel edits are saved only when child panel is closed  
   - Also, child panel edits take precedence over parent panel edits for the same key
+
+## [0.1.2]
+- Add Search functionality in all the views
+  - Use UP/DOWN keys to cycle through search results
