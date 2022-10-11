@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2018 David Boissier.
- * Modifications Copyright (c) 2022 Geetesh Gupta.
+ * Copyright (c) 2018 David Boissier and 2022 Geetesh Gupta.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.gg.plugins.json.style
+package com.gg.plugins.json.view.style
 
 import com.intellij.ui.Gray
 import com.intellij.ui.JBColor
@@ -22,7 +21,7 @@ import com.intellij.ui.SimpleTextAttributes
 import java.awt.Color
 
 object StyleAttributesProvider {
-    private val LIGNT_GREEN: Color = JBColor(Color(0, 128, 0), Color(165, 194, 97))
+    private val LIGHT_GREEN: Color = JBColor(Color(0, 128, 0), Color(165, 194, 97))
     private val LIGHT_GRAY: Color = Gray._128
 
     @JvmField
@@ -35,7 +34,7 @@ object StyleAttributesProvider {
     val keyValueAttribute = SimpleTextAttributes(SimpleTextAttributes.STYLE_BOLD, KEY_COLOR)
     val numberAttribute = SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, NUMBER_COLOR)
     val booleanAttribute = SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, NUMBER_COLOR)
-    val stringAttribute = SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, LIGNT_GREEN)
+    val stringAttribute = SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, LIGHT_GREEN)
     val nullAttribute = SimpleTextAttributes(SimpleTextAttributes.STYLE_ITALIC, LIGHT_GRAY)
     val documentAttribute = SimpleTextAttributes(SimpleTextAttributes.STYLE_BOLD, LIGHT_GRAY)
 }

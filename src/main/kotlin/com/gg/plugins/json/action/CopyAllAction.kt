@@ -16,7 +16,7 @@
  */
 package com.gg.plugins.json.action
 
-import com.gg.plugins.json.view.JsonResultPanel
+import com.gg.plugins.json.view.resultpanel.JsonResultPanel
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -27,6 +27,6 @@ import java.awt.datatransfer.StringSelection
 class CopyAllAction(private val jsonResultPanel: JsonResultPanel) :
     AnAction("Copy Results", "Copy results to clipboard", AllIcons.Actions.Copy), DumbAware {
     override fun actionPerformed(anActionEvent: AnActionEvent) {
-        CopyPasteManager.getInstance().setContents(StringSelection(jsonResultPanel.stringifiedResult()))
+        CopyPasteManager.getInstance().setContents(StringSelection(jsonResultPanel.activeView.getAllStringified()))
     }
 }

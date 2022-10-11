@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2022 Geetesh Gupta.
+ * Copyright (c) 2018 David Boissier.
+ * Modifications Copyright (c) 2022 Geetesh Gupta.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,19 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.gg.plugins.json.view
+package com.gg.plugins.json.model.pagination
 
-import com.intellij.ui.TableSpeedSearch
-import com.intellij.ui.table.TableView
-import com.intellij.util.ui.ListTableModel
-
-class JsonTableView<Item>(tableModel: ListTableModel<Item>) :
-    TableView<Item>(tableModel) {
-    init {
-        TableSpeedSearch(this)
-    }
+enum class ResultsPerPage(val label: String, val countPerPage: Int) {
+    ALL("All", 0), TEN("10", 10), TWENTY("20", 20), FIFTY("50", 50);
 }
-
-
-
-

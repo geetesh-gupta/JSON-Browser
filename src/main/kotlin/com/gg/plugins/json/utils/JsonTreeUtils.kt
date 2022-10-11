@@ -16,21 +16,19 @@
 package com.gg.plugins.json.utils
 
 import com.gg.plugins.json.model.JsonTreeNode
-import com.gg.plugins.json.model.KeyValueDescriptor
-import com.gg.plugins.json.model.NodeDescriptor
-import com.gg.plugins.json.model.ValueDescriptor
+import com.gg.plugins.json.view.nodedescriptor.KeyValueDescriptor
+import com.gg.plugins.json.view.nodedescriptor.ValueDescriptor
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import java.util.stream.Collectors
 import java.util.stream.IntStream
-import javax.swing.tree.TreeNode
 
 object JsonTreeUtils {
 
     @JvmStatic
-    fun buildJsonTree(obj: JsonElement?, parent: JsonTreeNode? = null, startIndex: Int = 0): TreeNode {
+    fun buildJsonTree(obj: JsonElement?, parent: JsonTreeNode? = null, startIndex: Int = 0): JsonTreeNode {
         val parentNode: JsonTreeNode = parent ?: JsonTreeNode(KeyValueDescriptor.createDescriptor("<root>", ""))
 
         when {
@@ -54,6 +52,7 @@ object JsonTreeUtils {
 
     @JvmStatic
     fun processJsonObject(obj: JsonObject, parentNode: JsonTreeNode): JsonTreeNode {
+        parentNode.removeAllChildren()
         for (key in obj.keySet()) {
             val value = obj[key]
             val currentNode = JsonTreeNode(KeyValueDescriptor.createDescriptor(key, value))
@@ -65,6 +64,7 @@ object JsonTreeUtils {
 
     @JvmStatic
     fun processJsonArray(objArr: JsonArray, parentNode: JsonTreeNode, startIndex: Int = 0): JsonTreeNode {
+        parentNode.removeAllChildren()
         for (i in startIndex until objArr.size()) {
             val value = objArr[i]
             val currentNode = JsonTreeNode(ValueDescriptor.createDescriptor(i, value))
@@ -76,24 +76,39 @@ object JsonTreeUtils {
 
     fun stringifyTree(treeNode: JsonTreeNode): String {
         if (treeNode.descriptor.key == "<root>") {
-            if (treeNode.childCount == 0) return ""
-            return if ((treeNode.getChildAt(0) as JsonTreeNode).descriptor is KeyValueDescriptor) IntStream.range(
-                0,
-                treeNode.childCount
-            ).mapToObj { i: Int ->
-                val childNode = (treeNode.getChildAt(i) as JsonTreeNode).userObject as NodeDescriptor
-                "\"${childNode.key}\" : $childNode"
+            val firstChildNode = treeNode.getChildAt(0) ?: return ""
+            when (firstChildNode.descriptor) {
+                is KeyValueDescriptor -> {
+                    return IntStream.range(
+                        0,
+                        treeNode.childCount
+                    ).mapToObj {
+                        val childNode = treeNode.getChildAt(it)
+                        "\"${childNode!!.userObject.key}\" : $childNode"
+                    }
+                        .collect(Collectors.joining(",", "{", "}"))
+                }
+
+                else -> {
+                    return IntStream.range(0, treeNode.childCount)
+                        .mapToObj { i: Int -> treeNode.getChildAt(i).toString() }
+                        .collect(Collectors.joining(",", "[", "]"))
+                }
             }
-                .collect(Collectors.joining(",", "{", "}")) else IntStream.range(0, treeNode.childCount)
-                .mapToObj { i: Int -> treeNode.getChildAt(i).toString() }
-                .collect(Collectors.joining(",", "[", "]"))
         }
         return treeNode.descriptor.toString()
     }
 
     fun updateNode(node: JsonTreeNode, value: Any) {
         updateChildren(node, value)
-        updateParents(node.parent as JsonTreeNode, node)
+        if (node.parent != null)
+            updateParents(node.parent as JsonTreeNode, node)
+    }
+
+    fun updateNode(node: JsonTreeNode) {
+        updateChildren(node, stringifyTree(node))
+        if (node.parent != null)
+            updateParents(node.parent as JsonTreeNode, node)
     }
 
     private fun isRootNode(node: JsonTreeNode): Boolean {
@@ -103,11 +118,13 @@ object JsonTreeUtils {
     private fun updateParents(node: JsonTreeNode, childNode: JsonTreeNode) {
         if (!isRootNode(node)) {
             val childIndex = node.getIndex(childNode)
+            // TODO: Update this based on TreeNode type
             when (node.descriptor.value) {
+
                 is JsonObject -> {
                     (node.descriptor.value as JsonObject).add(
                         childNode.descriptor.key,
-                        JsonParser.parseString(childNode.descriptor.value as String)
+                        JsonParser.parseString(childNode.descriptor.value.toString())
                     )
                 }
 
@@ -118,14 +135,20 @@ object JsonTreeUtils {
                     )
                 }
             }
-            updateParents(node.parent as JsonTreeNode, node)
+            if (node.parent != null)
+                updateParents(node.parent as JsonTreeNode, node)
         }
     }
 
     private fun updateChildren(node: JsonTreeNode, value: Any) {
         node.descriptor.value = value
         node.removeAllChildren()
-        val elem: JsonElement = JsonParser.parseString(node.descriptor.toString())
+        val elem: JsonElement = JsonParser.parseString(node.descriptor.value.toString())
         buildJsonTree(elem, node)
+    }
+
+    fun convertTreeNodeToJsonElement(treeNode: JsonTreeNode?): JsonElement {
+        if (treeNode == null) return JsonParser.parseString("null")
+        return JsonParser.parseString(stringifyTree(treeNode))
     }
 }

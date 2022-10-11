@@ -17,9 +17,9 @@
   This is licensed under LGPL.  License can be found here:  http://www.gnu.org/licenses/lgpl-3.0.txt
   This is provided as is.  If you have questions please direct them to charlie.hubbard at gmail dot you know what.
  */
-package com.gg.plugins.json.table
+package com.gg.plugins.json.view.table
 
-import com.gg.plugins.json.style.StyleAttributesProvider
+import com.gg.plugins.json.view.style.StyleAttributesProvider
 import com.gg.plugins.json.utils.DateUtils
 import com.intellij.ui.JBColor
 import com.intellij.util.ui.UIUtil
@@ -136,6 +136,7 @@ class DateTimePicker private constructor() : JXDatePicker(null, Locale.getDefaul
         private val monthForegroundColor = StyleAttributesProvider.NUMBER_COLOR
         private val dayOfTheWeekForegroundColor = StyleAttributesProvider.KEY_COLOR
         private val todayBackgroundColor: Color = JBColor.WHITE
+
         @JvmStatic
         fun create(): DateTimePicker {
             val dateTimePicker = DateTimePicker()

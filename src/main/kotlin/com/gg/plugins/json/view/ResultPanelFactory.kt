@@ -15,6 +15,7 @@
  */
 package com.gg.plugins.json.view
 
+import com.gg.plugins.json.utils.JsonTreeUtils
 import com.google.gson.JsonParser
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
@@ -33,7 +34,7 @@ class ResultPanelFactory : ToolWindowFactory {
                     ".com/plugin/20002-mongo-db-browser\"}]},{\"name\":\"JSONBrowser\"," +
                     "\"urls\":[{\"github\":\"https://github.com/geetesh-gupta/JSON-Browser\"}," +
                     "{\"jetbrains\":\"https://plugins.jetbrains.com/plugin/20013-json-browser\"}]}]}"
-        val myToolWindow = JsonPanel(project, JsonParser.parseString(jsonStr))
+        val myToolWindow = JsonPanel(project, JsonTreeUtils.buildJsonTree(JsonParser.parseString(jsonStr)))
         val contentFactory = ApplicationManager.getApplication().getService(
             ContentFactory::class.java
         )

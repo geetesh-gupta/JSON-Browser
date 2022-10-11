@@ -13,21 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.gg.plugins.json.view
+package com.gg.plugins.json.view.resultpanel
 
 import com.gg.plugins.json.model.JsonTreeNode
-import com.gg.plugins.json.model.NodeDescriptor
-import com.gg.plugins.json.renderer.KeyCellRenderer
-import com.gg.plugins.json.renderer.ValueCellRenderer
-import com.gg.plugins.json.table.TreeNodeDatePickerCellEditor
-import com.gg.plugins.json.table.ValueCellEditor
 import com.gg.plugins.json.utils.JsonTreeUtils
+import com.gg.plugins.json.view.nodedescriptor.NodeDescriptor
+import com.gg.plugins.json.view.renderer.KeyCellRenderer
+import com.gg.plugins.json.view.renderer.ValueCellRenderer
+import com.gg.plugins.json.view.table.TreeNodeDatePickerCellEditor
+import com.gg.plugins.json.view.table.ValueCellEditor
 import com.intellij.ui.TreeTableSpeedSearch
 import com.intellij.ui.treeStructure.treetable.ListTreeTableModelOnColumns
 import com.intellij.ui.treeStructure.treetable.TreeTable
 import com.intellij.ui.treeStructure.treetable.TreeTableModel
 import com.intellij.util.ui.ColumnInfo
+import com.intellij.util.ui.tree.TreeUtil
 import org.apache.commons.lang.StringUtils
+import java.awt.Component
 import java.util.Date
 import javax.swing.table.TableCellEditor
 import javax.swing.table.TableCellRenderer
@@ -35,10 +37,12 @@ import javax.swing.tree.TreeNode
 import javax.swing.tree.TreePath
 import kotlin.math.max
 
-class JsonTreeTableView(rootNode: TreeNode, private val columns: Array<ColumnInfo<JsonTreeNode, out Any>>) :
-    TreeTable(ListTreeTableModelOnColumns(rootNode, columns)) {
+class JsonTreeView(
+    private val rootNode: JsonTreeNode,
+    private val columns: Array<ColumnInfo<JsonTreeNode, out Any>> = COLUMNS_FOR_WRITING
+) :
+    TreeTable(ListTreeTableModelOnColumns(rootNode, columns)), IResultPanelState {
     init {
-        val tree = tree
         tree.showsRootHandles = true
         tree.isRootVisible = false
         setTreeCellRenderer(KeyCellRenderer())
@@ -51,6 +55,12 @@ class JsonTreeTableView(rootNode: TreeNode, private val columns: Array<ColumnInf
             val descriptor = node.descriptor
             descriptor.value.toString()
         }
+
+//        model.addTableModelListener {
+//            val a = it
+//        }
+//        tree.treeDidChange()
+//        val b = TreeModelSupport(model)
     }
 
     private fun getMaxKeyColumnWidth(rootNode: TreeNode): Int {
@@ -62,7 +72,7 @@ class JsonTreeTableView(rootNode: TreeNode, private val columns: Array<ColumnInf
             }
             length += maxChildLen
         }
-        val userObject = (rootNode as JsonTreeNode).userObject as NodeDescriptor
+        val userObject = (rootNode as JsonTreeNode).userObject
         length += userObject.key.length
         return length
     }
@@ -159,4 +169,42 @@ class JsonTreeTableView(rootNode: TreeNode, private val columns: Array<ColumnInf
         private val WRITABLE_VALUE: WritableColumnInfo = WritableColumnInfo()
         val COLUMNS_FOR_WRITING = arrayOf(KEY, WRITABLE_VALUE)
     }
+
+    override fun getSelected(): JsonTreeNode? {
+        return tree.lastSelectedPathComponent as JsonTreeNode?
+    }
+
+    override fun getAll(): JsonTreeNode {
+        return rootNode
+//        return tree.model.root as JsonTreeNode
+    }
+
+    override fun getAllStringified(): String {
+        return JsonTreeUtils.stringifyTree(tree.model.root as JsonTreeNode)
+    }
+
+    override fun getView(): Component {
+        return this
+    }
+
+    override fun expandAll() {
+        TreeUtil.expandAll(tree)
+    }
+
+    override fun collapseAll() {
+        TreeUtil.collapseAll(tree, 1)
+    }
+
+    override fun refresh() {
+        JsonTreeUtils.updateNode(rootNode)
+        collapseAll()
+    }
+
+    override fun dispose() {
+    }
+
+    override fun getSelectedColumnName(): String {
+        return getSelected()?.userObject?.key ?: ""
+    }
+
 }

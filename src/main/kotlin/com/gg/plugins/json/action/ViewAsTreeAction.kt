@@ -17,7 +17,7 @@
 package com.gg.plugins.json.action
 
 import com.gg.plugins.json.view.JsonPanel
-import com.gg.plugins.json.view.JsonResultPanel
+import com.gg.plugins.json.view.resultpanel.JsonResultPanel
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent

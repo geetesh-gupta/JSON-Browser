@@ -16,8 +16,8 @@
  */
 package com.gg.plugins.json.action
 
-import com.gg.plugins.json.model.Pagination
-import com.gg.plugins.json.model.ResultsPerPage
+import com.gg.plugins.json.model.pagination.Pagination
+import com.gg.plugins.json.model.pagination.ResultsPerPage
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent

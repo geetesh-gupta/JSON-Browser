@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2018 David Boissier.
- * Modifications Copyright (c) 2022 Geetesh Gupta.
+ * Copyright (c) 2022 Geetesh Gupta.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,29 +16,25 @@
 package com.gg.plugins.json.action
 
 import com.gg.plugins.json.view.resultpanel.JsonResultPanel
+import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.ide.CopyPasteManager
 import com.intellij.openapi.project.DumbAware
 import java.awt.Toolkit
-import java.awt.datatransfer.StringSelection
 import java.awt.event.KeyEvent
 
-class CopyNodeAction(private val resultPanel: JsonResultPanel) :
-    AnAction("Copy...", "Copy selected node to clipboard", null), DumbAware {
+class SaveAction(private val resultPanel: JsonResultPanel) :
+    AnAction("Save", "Save", AllIcons.Actions.MenuSaveall), DumbAware {
     init {
-        registerCustomShortcutSet(
-            KeyEvent.VK_C,
-            Toolkit.getDefaultToolkit().menuShortcutKeyMaskEx, resultPanel
-        )
+        registerCustomShortcutSet(KeyEvent.VK_S, Toolkit.getDefaultToolkit().menuShortcutKeyMaskEx, resultPanel)
     }
 
-    override fun update(e: AnActionEvent) {
-        e.presentation.isVisible = resultPanel.activeView.getSelected() != null
+    override fun update(event: AnActionEvent) {
+        super.update(event)
+//        event.presentation.isEnabled = resultPanel.isSelectedNodeId
     }
 
     override fun actionPerformed(anActionEvent: AnActionEvent) {
-        CopyPasteManager.getInstance()
-            .setContents(StringSelection(resultPanel.activeView.getSelectedStringified()))
+        resultPanel.updateResultView(resultPanel.activeView.getAll())
     }
 }

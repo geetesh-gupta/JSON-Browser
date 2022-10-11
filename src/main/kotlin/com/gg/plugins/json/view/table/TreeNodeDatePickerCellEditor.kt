@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.gg.plugins.json.table
+package com.gg.plugins.json.view.table
 
-import com.gg.plugins.json.model.NodeDescriptor
+import com.gg.plugins.json.view.nodedescriptor.NodeDescriptor
 import com.gg.plugins.json.utils.DateUtils
 import org.jdesktop.swingx.table.DatePickerCellEditor
 import java.awt.event.ActionListener
-import java.util.*
+import java.util.Date
+import java.util.Locale
 import javax.swing.BorderFactory
 
 class TreeNodeDatePickerCellEditor : DatePickerCellEditor() {

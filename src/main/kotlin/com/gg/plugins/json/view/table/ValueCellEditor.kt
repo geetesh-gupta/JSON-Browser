@@ -14,26 +14,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.gg.plugins.json.renderer
+package com.gg.plugins.json.view.table
 
 import com.gg.plugins.json.model.JsonTreeNode
-import com.intellij.ui.ColoredTableCellRenderer
 import com.intellij.ui.treeStructure.treetable.TreeTable
+import java.awt.Component
+import javax.swing.DefaultCellEditor
 import javax.swing.JTable
+import javax.swing.JTextField
 
-class ValueCellRenderer : ColoredTableCellRenderer() {
-    override fun customizeCellRenderer(
+class ValueCellEditor : DefaultCellEditor(JTextField()) {
+    override fun getCellEditorValue(): Any {
+        return (component as JTextField).text
+    }
+
+    override fun getTableCellEditorComponent(
         table: JTable,
-        value: Any?,
-        selected: Boolean,
-        hasFocus: Boolean,
+        value: Any,
+        isSelected: Boolean,
         row: Int,
         column: Int
-    ) {
-        val tree = (table as TreeTable).tree
-        val pathForRow = tree.getPathForRow(row)
-        val node = pathForRow.lastPathComponent as JsonTreeNode
-        val descriptor = node.descriptor
-        descriptor.renderValue(this, tree.isExpanded(pathForRow))
+    ): Component {
+        val stringEditor = component as JTextField
+        val jsonNode = (table as TreeTable).tree.getPathForRow(row).lastPathComponent as JsonTreeNode
+        stringEditor.text = jsonNode.descriptor.value.toString()
+        return stringEditor
     }
 }

@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2018 David Boissier.
- * Modifications Copyright (c) 2022 Geetesh Gupta.
+ * Copyright (c) 2022 Geetesh Gupta.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,30 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.gg.plugins.json.table
+package com.gg.plugins.json.view.renderer
 
 import com.gg.plugins.json.model.JsonTreeNode
+import com.intellij.ui.ColoredTableCellRenderer
 import com.intellij.ui.treeStructure.treetable.TreeTable
-import java.awt.Component
-import javax.swing.DefaultCellEditor
 import javax.swing.JTable
-import javax.swing.JTextField
 
-class ValueCellEditor : DefaultCellEditor(JTextField()) {
-    override fun getCellEditorValue(): Any {
-        return (component as JTextField).text
-    }
-
-    override fun getTableCellEditorComponent(
+class ValueCellRenderer : ColoredTableCellRenderer() {
+    override fun customizeCellRenderer(
         table: JTable,
-        value: Any,
-        isSelected: Boolean,
+        value: Any?,
+        selected: Boolean,
+        hasFocus: Boolean,
         row: Int,
         column: Int
-    ): Component {
-        val stringEditor = component as JTextField
-        val jsonNode = (table as TreeTable).tree.getPathForRow(row).lastPathComponent as JsonTreeNode
-        stringEditor.text = jsonNode.descriptor.value.toString()
-        return stringEditor
+    ) {
+        val tree = (table as TreeTable).tree
+        val pathForRow = tree.getPathForRow(row)
+        val node = pathForRow.lastPathComponent as JsonTreeNode
+        val descriptor = node.userObject
+        descriptor.renderValue(this, tree.isExpanded(pathForRow))
     }
 }

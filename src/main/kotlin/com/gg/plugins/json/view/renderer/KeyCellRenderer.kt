@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2018 David Boissier.
- * Modifications Copyright (c) 2022 Geetesh Gupta.
+ * Copyright (c) 2022 Geetesh Gupta.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.gg.plugins.json.renderer
+package com.gg.plugins.json.view.renderer
 
 import com.gg.plugins.json.model.JsonTreeNode
 import com.intellij.ui.ColoredTreeCellRenderer
@@ -30,7 +29,7 @@ class KeyCellRenderer : ColoredTreeCellRenderer() {
         row: Int,
         hasFocus: Boolean
     ) {
-        val descriptor = (value as JsonTreeNode).descriptor
+        val descriptor = (value as JsonTreeNode).userObject
         descriptor.renderNode(this)
     }
 }

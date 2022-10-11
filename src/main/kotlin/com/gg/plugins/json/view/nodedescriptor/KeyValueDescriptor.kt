@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2018 David Boissier.
- * Modifications Copyright (c) 2022 Geetesh Gupta.
+ * Copyright (c) 2022 Geetesh Gupta.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.gg.plugins.json.model
+package com.gg.plugins.json.view.nodedescriptor
 
-import com.gg.plugins.json.style.StyleAttributesProvider
+import com.gg.plugins.json.view.style.StyleAttributesProvider
 import com.gg.plugins.json.utils.DateUtils
 import com.gg.plugins.json.utils.StringUtils
 import com.intellij.ui.ColoredTableCellRenderer
 import com.intellij.ui.ColoredTreeCellRenderer
 import com.intellij.ui.SimpleTextAttributes
-import java.util.*
+import java.lang.Boolean.parseBoolean
+import java.util.Date
+import java.util.Locale
 
 open class KeyValueDescriptor private constructor(
     override val key: String,
@@ -44,10 +45,6 @@ open class KeyValueDescriptor private constructor(
     override val formattedValue: String?
         get() = StringUtils.abbreviateInCenter(value.toString(), NodeDescriptor.MAX_LENGTH)
 
-    override fun pretty(): String {
-        return formattedValue!!
-    }
-
     override fun toString(): String {
         return value.toString()
     }
@@ -60,39 +57,13 @@ open class KeyValueDescriptor private constructor(
                     object : KeyValueDescriptor(key, value, StyleAttributesProvider.booleanAttribute) {
                         override var value: Any? = value
                             set(value) {
-                                field = java.lang.Boolean.valueOf(value as String?)
+                                field = parseBoolean(value as String?)
                             }
                     }
                 }
 
-                is Int -> {
-                    object : KeyValueDescriptor(key, value, StyleAttributesProvider.numberAttribute) {
-                        override var value: Any? = value
-                            get() = super.value
-                            set(value) {
-                                field = Integer.valueOf(value as String?)
-                            }
-                    }
-                }
-
-                is Double -> {
-                    object : KeyValueDescriptor(key, value, StyleAttributesProvider.numberAttribute) {
-                        override var value: Any? = value
-                            get() = super.value
-                            set(value) {
-                                field = java.lang.Double.valueOf(value as String?)
-                            }
-                    }
-                }
-
-                is Long -> {
-                    object : KeyValueDescriptor(key, value, StyleAttributesProvider.numberAttribute) {
-                        override var value: Any? = value
-                            get() = super.value
-                            set(value) {
-                                field = java.lang.Long.valueOf(value as String?)
-                            }
-                    }
+                is Number -> {
+                    object : KeyValueDescriptor(key, value, StyleAttributesProvider.numberAttribute) {}
                 }
 
                 is String -> {
@@ -114,7 +85,6 @@ open class KeyValueDescriptor private constructor(
                         override fun toString(): String {
                             return formattedValue
                         }
-
                     }
                 }
 

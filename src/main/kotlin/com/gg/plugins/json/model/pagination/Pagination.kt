@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.gg.plugins.json.model
+package com.gg.plugins.json.model.pagination
 
 import java.math.BigDecimal
 import java.math.RoundingMode

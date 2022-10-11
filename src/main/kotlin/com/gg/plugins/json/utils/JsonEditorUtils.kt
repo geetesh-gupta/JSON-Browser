@@ -42,6 +42,11 @@ fun createEditor(data: JsonElement?, project: Project?): Editor {
     return editor
 }
 
+fun formatJson(data: JsonElement?): String {
+    val gson = GsonBuilder().setPrettyPrinting().create()
+    return gson.toJson(data)
+}
+
 private fun attachHighlighter(editor: EditorEx) {
     val scheme = editor.colorsScheme
     scheme.setColor(EditorColors.CARET_ROW_COLOR, null)

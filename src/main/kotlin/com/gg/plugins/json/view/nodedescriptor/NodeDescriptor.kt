@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2018 David Boissier.
- * Modifications Copyright (c) 2022 Geetesh Gupta.
+ * Copyright (c) 2022 Geetesh Gupta.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.gg.plugins.json.model
+package com.gg.plugins.json.view.nodedescriptor
 
 import com.intellij.ui.ColoredTableCellRenderer
 import com.intellij.ui.ColoredTreeCellRenderer
@@ -25,7 +24,6 @@ interface NodeDescriptor {
     val key: String
     val formattedValue: String?
     var value: Any?
-    fun pretty(): String?
 
     companion object {
         const val MAX_LENGTH = 150

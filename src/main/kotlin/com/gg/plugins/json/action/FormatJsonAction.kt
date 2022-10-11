@@ -15,15 +15,20 @@
  */
 package com.gg.plugins.json.action
 
-import com.gg.plugins.json.view.JsonResultPanel
+import com.gg.plugins.json.view.resultpanel.JsonResultPanel
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.DumbAware
 
-class FormatJsonAction(private val jsonResultPanel: JsonResultPanel) :
+class FormatJsonAction(private val resultPanel: JsonResultPanel) :
     AnAction("Format JSON", "Format JSON", AllIcons.Actions.Refresh), DumbAware {
     override fun actionPerformed(anActionEvent: AnActionEvent) {
-        jsonResultPanel.updateResultView(jsonResultPanel.editorValue(), null)
+        resultPanel.updateResultView(resultPanel.activeView.getAll())
     }
+
+    override fun update(e: AnActionEvent) {
+        e.presentation.isVisible = resultPanel.currentViewMode == JsonResultPanel.ViewMode.INPUT
+    }
+
 }

@@ -15,61 +15,88 @@
  */
 package com.gg.plugins.json.utils
 
-import com.gg.plugins.json.renderer.TableCellRenderer
-import com.google.gson.JsonElement
-import com.google.gson.JsonObject
+import com.gg.plugins.json.model.JsonTreeNode
+import com.gg.plugins.json.view.nodedescriptor.KeyValueDescriptor
+import com.gg.plugins.json.view.nodedescriptor.ValueDescriptor
+import com.gg.plugins.json.view.renderer.TableCellRenderer
 import com.intellij.util.ui.ColumnInfo
 import com.intellij.util.ui.ListTableModel
-import java.util.*
-import java.util.function.Consumer
+import java.util.stream.IntStream
 
 object JsonTableUtils {
     @JvmStatic
-    fun buildJsonTable(document: JsonElement?): ListTableModel<JsonObject> {
-        val columnInfos = extractColumnNames(document)
-        return if (document!!.isJsonArray) {
-            val columnInfoList: MutableList<JsonObject> = ArrayList()
-            document.asJsonArray.forEach(Consumer { d: JsonElement -> columnInfoList.add(d.asJsonObject) })
-            ListTableModel(columnInfos, columnInfoList)
-        } else {
-            ListTableModel(columnInfos, listOf(document.asJsonObject))
-        }
-    }
-
-    private fun extractColumnNames(document: JsonElement?): Array<ColumnInfo<*, *>> {
+    fun buildJsonTable(node: JsonTreeNode?): ListTableModel<JsonTreeNode> {
+        val columnInfos = extractColumnNames(node)
         return when {
-            document == null -> {
-                return arrayOf()
+            node == null -> {
+                ListTableModel()
             }
 
-            document.isJsonArray -> {
-                val columnInfos: MutableSet<ColumnInfo<*, *>> = HashSet()
-                document.asJsonArray.forEach(Consumer { d: JsonElement? ->
-                    val columnInfos1 = extractColumnNames(d)
-                    columnInfos.addAll(listOf(*columnInfos1))
-                })
-                val columnInfosArr: Array<ColumnInfo<*, *>> = columnInfos.toTypedArray()
-                columnInfosArr
+
+            node.childCount > 0 -> {
+                val firstChildNode = node.getChildAt(0) ?: return ListTableModel()
+                when (firstChildNode.userObject) {
+
+                    is KeyValueDescriptor -> {
+                        return ListTableModel(columnInfos, listOf(node))
+                    }
+
+                    is ValueDescriptor -> {
+                        val columnInfoList: MutableList<JsonTreeNode> = ArrayList()
+                        node.children().iterator().forEach { columnInfoList.add(it as JsonTreeNode) }
+                        return ListTableModel(columnInfos, columnInfoList)
+                    }
+
+                    else -> {
+                        return ListTableModel()
+                    }
+                }
             }
 
             else -> {
-                extractColumnNames(document.asJsonObject)
+                ListTableModel()
             }
         }
     }
 
-    private fun extractColumnNames(document: JsonObject): Array<ColumnInfo<*, *>> {
-        val keys = document.keySet().toList()
-        return Array(keys.size) { TableColumnInfo(keys[it]) }
+    private fun extractColumnNames(node: JsonTreeNode?): Array<ColumnInfo<JsonTreeNode, *>> {
+        return when {
+            node == null -> {
+                arrayOf()
+            }
+
+            node.childCount > 0 -> {
+                val firstChildNode = node.getChildAt(0) ?: return arrayOf()
+                when (firstChildNode.userObject) {
+                    is KeyValueDescriptor -> {
+                        return Array(node.childCount) { TableColumnInfo(node.getChildAt(it)?.userObject!!.key) }
+                    }
+
+                    is ValueDescriptor -> {
+                        val columnInfos: MutableSet<ColumnInfo<JsonTreeNode, *>> = HashSet()
+                        IntStream.range(0, node.childCount)
+                            .forEach { columnInfos.addAll(extractColumnNames(node.getChildAt(it))) }
+                        return columnInfos.stream().map { it }.toArray { arrayOfNulls(it) }
+                    }
+
+                    else -> {
+                        return arrayOf()
+                    }
+                }
+            }
+
+            else -> {
+                arrayOf()
+            }
+        }
     }
 
-    private class TableColumnInfo(private val key: String) : ColumnInfo<Any, Any?>(key) {
-        override fun valueOf(o: Any): Any? {
-            val document = o as JsonObject
-            return document[key]
+    private class TableColumnInfo(val key: String) : ColumnInfo<JsonTreeNode, Any?>(key) {
+        override fun valueOf(o: JsonTreeNode): Any? {
+            return o.getChildByKey(this.key)
         }
 
-        override fun getRenderer(o: Any): TableCellRenderer {
+        override fun getRenderer(o: JsonTreeNode): TableCellRenderer {
             return TABLE_CELL_RENDERER
         }
 
@@ -77,10 +104,4 @@ object JsonTableUtils {
             private val TABLE_CELL_RENDERER = TableCellRenderer()
         }
     }
-}
-
-inline fun <reified T> Collection<T>.toTypedArray(): Array<T> {
-    @Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN")
-    val thisCollection = this as java.util.Collection<*>
-    return thisCollection.toArray(arrayOfNulls<T>(0))
 }
