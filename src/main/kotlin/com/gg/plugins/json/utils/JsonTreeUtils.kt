@@ -75,80 +75,80 @@ object JsonTreeUtils {
     }
 
     fun stringifyTree(treeNode: JsonTreeNode): String {
-        if (treeNode.descriptor.key == "<root>") {
+        if (treeNode.getKey() == "<root>") {
             val firstChildNode = treeNode.getChildAt(0) ?: return ""
-            when (firstChildNode.descriptor) {
+            when (firstChildNode.userObject) {
                 is KeyValueDescriptor -> {
                     return IntStream.range(
                         0,
                         treeNode.childCount
                     ).mapToObj {
                         val childNode = treeNode.getChildAt(it)
-                        "\"${childNode!!.userObject.key}\" : $childNode"
+                        "\"${childNode.userObject.key}\" : $childNode"
                     }
                         .collect(Collectors.joining(",", "{", "}"))
                 }
 
                 else -> {
                     return IntStream.range(0, treeNode.childCount)
-                        .mapToObj { i: Int -> treeNode.getChildAt(i).toString() }
+                        .mapToObj { i: Int -> treeNode.getChildAt(i).getValue().toString() }
                         .collect(Collectors.joining(",", "[", "]"))
                 }
             }
         }
-        return treeNode.descriptor.toString()
+        return treeNode.getValue().toString()
     }
-
-    fun updateNode(node: JsonTreeNode, value: Any) {
-        updateChildren(node, value)
-        if (node.parent != null)
-            updateParents(node.parent as JsonTreeNode, node)
-    }
-
-    fun updateNode(node: JsonTreeNode) {
-        updateChildren(node, stringifyTree(node))
-        if (node.parent != null)
-            updateParents(node.parent as JsonTreeNode, node)
-    }
-
-    private fun isRootNode(node: JsonTreeNode): Boolean {
-        return node.descriptor.key == "<root>"
-    }
-
-    private fun updateParents(node: JsonTreeNode, childNode: JsonTreeNode) {
-        if (!isRootNode(node)) {
-            val childIndex = node.getIndex(childNode)
-            // TODO: Update this based on TreeNode type
-            when (node.descriptor.value) {
-
-                is JsonObject -> {
-                    (node.descriptor.value as JsonObject).add(
-                        childNode.descriptor.key,
-                        JsonParser.parseString(childNode.descriptor.value.toString())
-                    )
-                }
-
-                is JsonArray -> {
-                    (node.descriptor.value as JsonArray).set(
-                        childIndex,
-                        JsonParser.parseString(childNode.descriptor.value.toString())
-                    )
-                }
-            }
-            if (node.parent != null)
-                updateParents(node.parent as JsonTreeNode, node)
-        }
-    }
-
-    private fun updateChildren(node: JsonTreeNode, value: Any) {
-        node.descriptor.value = value
-        node.removeAllChildren()
-        val elem: JsonElement = JsonParser.parseString(node.descriptor.value.toString())
-        buildJsonTree(elem, node)
-    }
+//
+//    fun updateNode(node: JsonTreeNode, value: Any) {
+//        updateChildren(node, value)
+//        if (node.parent != null)
+//            updateParents(node.parent as JsonTreeNode, node)
+//    }
+//
+//    fun updateNode(node: JsonTreeNode) {
+//        updateChildren(node, stringifyTree(node))
+//        if (node.parent != null)
+//            updateParents(node.parent as JsonTreeNode, node)
+//    }
+//
+//    private fun isRootNode(node: JsonTreeNode): Boolean {
+//        return node.getKey() == "<root>"
+//    }
+//
+//    private fun updateParents(node: JsonTreeNode, childNode: JsonTreeNode) {
+//        if (!isRootNode(node)) {
+//            val childIndex = node.getIndex(childNode)
+//            // TODO: Update this based on TreeNode type
+//            when (node.getValue()) {
+//
+//                is JsonObject -> {
+//                    (node.getValue() as JsonObject).add(
+//                        childNode.getKey(),
+//                        JsonParser.parseString(childNode.getValue().toString())
+//                    )
+//                }
+//
+//                is JsonArray -> {
+//                    (node.getValue() as JsonArray).set(
+//                        childIndex,
+//                        JsonParser.parseString(childNode.getValue().toString())
+//                    )
+//                }
+//            }
+//            if (node.parent != null)
+//                updateParents(node.parent as JsonTreeNode, node)
+//        }
+//    }
+//
+//    private fun updateChildren(node: JsonTreeNode, value: Any) {
+//        node.setValue(value)
+//        node.removeAllChildren()
+//        val elem: JsonElement = JsonParser.parseString(node.getValue().toString())
+//        buildJsonTree(elem, node)
+//    }
 
     fun convertTreeNodeToJsonElement(treeNode: JsonTreeNode?): JsonElement {
         if (treeNode == null) return JsonParser.parseString("null")
-        return JsonParser.parseString(stringifyTree(treeNode))
+        return JsonParser.parseString(treeNode.stringify())
     }
 }

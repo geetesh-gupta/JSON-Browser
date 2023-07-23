@@ -69,7 +69,7 @@ object JsonTableUtils {
                 val firstChildNode = node.getChildAt(0) ?: return arrayOf()
                 when (firstChildNode.userObject) {
                     is KeyValueDescriptor -> {
-                        return Array(node.childCount) { TableColumnInfo(node.getChildAt(it)?.userObject!!.key) }
+                        return Array(node.childCount) { TableColumnInfo(node.getChildAt(it).getKey()) }
                     }
 
                     is ValueDescriptor -> {
@@ -92,7 +92,7 @@ object JsonTableUtils {
     }
 
     private class TableColumnInfo(val key: String) : ColumnInfo<JsonTreeNode, Any?>(key) {
-        override fun valueOf(o: JsonTreeNode): Any? {
+        override fun valueOf(o: JsonTreeNode): Any {
             return o.getChildByKey(this.key)
         }
 

@@ -17,7 +17,6 @@ package com.gg.plugins.json.view.resultpanel
 
 import com.gg.plugins.json.model.JsonTreeNode
 import com.gg.plugins.json.utils.JsonTableUtils
-import com.gg.plugins.json.utils.JsonTreeUtils
 import com.intellij.ui.TableSpeedSearch
 import com.intellij.ui.table.TableView
 import java.awt.Component
@@ -64,7 +63,8 @@ class JsonTableView(private val rootNode: JsonTreeNode) : TableView<JsonTreeNode
     }
 
     override fun refresh() {
-        JsonTreeUtils.updateNode(rootNode)
+        rootNode.refreshNodeViaChildren()
+//        JsonTreeUtils.updateNode(rootNode)
     }
 
 }

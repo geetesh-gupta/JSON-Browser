@@ -16,7 +16,6 @@
 package com.gg.plugins.json.view.resultpanel
 
 import com.gg.plugins.json.model.JsonTreeNode
-import com.gg.plugins.json.utils.JsonTreeUtils
 import com.gg.plugins.json.view.nodedescriptor.NodeDescriptor
 import com.gg.plugins.json.view.renderer.KeyCellRenderer
 import com.gg.plugins.json.view.renderer.ValueCellRenderer
@@ -118,7 +117,8 @@ class JsonTreeView(
         }
 
         override fun setValue(treeNode: JsonTreeNode, value: Any) {
-            JsonTreeUtils.updateNode(treeNode, value)
+            treeNode.setValue(value)
+//            JsonTreeUtils.updateNode(treeNode, value)
         }
 
         override fun getRenderer(o: JsonTreeNode): TableCellRenderer {
@@ -180,7 +180,7 @@ class JsonTreeView(
     }
 
     override fun getAllStringified(): String {
-        return JsonTreeUtils.stringifyTree(tree.model.root as JsonTreeNode)
+        return rootNode.stringify()
     }
 
     override fun getView(): Component {
@@ -196,7 +196,8 @@ class JsonTreeView(
     }
 
     override fun refresh() {
-        JsonTreeUtils.updateNode(rootNode)
+        rootNode.refreshNodeViaChildren()
+//        JsonTreeUtils.updateNode(rootNode)
         collapseAll()
     }
 

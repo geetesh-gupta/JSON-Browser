@@ -18,12 +18,15 @@ class JsonView(private val rootNode: JsonTreeNode, var project: Project) : IResu
     }
 
     override fun getAll(): JsonTreeNode {
-        JsonTreeUtils.updateNode(rootNode, JsonParser.parseString(editor.document.text))
+//        JsonTreeUtils.updateNode(rootNode, JsonParser.parseString(editor.document.text))
+        rootNode.setValue(JsonParser.parseString(editor.document.text))
+        rootNode.refreshNodeViaValue()
         return rootNode
     }
 
     override fun refresh() {
-        JsonTreeUtils.updateNode(rootNode)
+//        JsonTreeUtils.updateNode(rootNode)
+        rootNode.refreshNodeViaChildren()
         val r = Runnable { editor.document.setText(formatJson(JsonTreeUtils.convertTreeNodeToJsonElement(rootNode))) }
         WriteCommandAction.runWriteCommandAction(project, r)
     }
