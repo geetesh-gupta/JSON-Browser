@@ -1,6 +1,5 @@
 # JSON Browser
 
-![Build](https://github.com/geetesh-gupta/json-viewer/workflows/Build/badge.svg)
 [![Version](https://img.shields.io/jetbrains/plugin/v/20013-json-browser.svg)](https://plugins.jetbrains.com/plugin/20013-json-browser)
 [![Downloads](https://img.shields.io/jetbrains/plugin/d/20013-json-browser.svg)](https://plugins.jetbrains.com/plugin/20013-json-browser)
 
