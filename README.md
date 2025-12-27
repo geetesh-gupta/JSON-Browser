@@ -59,7 +59,7 @@ on https://github.com/geetesh-gupta/JSON-Browser/issues.
 
 ## Compatibility Range
 
-- 241—242.*
+- 251—253.*
 - Check https://plugins.jetbrains.com/plugin/20013-json-browser/versions for further details
 
 ## Installation
