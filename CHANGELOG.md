@@ -1,6 +1,7 @@
 # JSON Browser Changelog
 
-## [Unreleased]
+## [2025.1.1]
+- Updated to support IDE versions 2025.1+.
 
 ## [2024.1.1]
 
